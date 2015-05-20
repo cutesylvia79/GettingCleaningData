@@ -1,12 +1,5 @@
 # Codebook for Data Dictionary of Tidy Data
 
----
-title: "Codebook for Data Dictionary of Tidy Data"
-author: "Sylvia Seow"
-date: "Wednesday, May 20, 2015"
-output: "html_document"
----
-
 ***
 
 
