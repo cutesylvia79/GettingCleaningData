@@ -2,7 +2,7 @@ library(dplyr)
 library(reshape2)
 
 
-setwd("C:/Users/sylvia.seow/sylviadatascience/sylviadatascience/r")
+##setwd("C:/Users/sylvia.seow/sylviadatascience/sylviadatascience/r")
 
 ## download file "tidy_feature.csv" from my github, and save it into working directory
 
