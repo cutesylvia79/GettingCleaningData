@@ -1,8 +1,20 @@
 # Codebook for Data Dictionary of Tidy Data
 
+---
+title: "Codebook for Data Dictionary of Tidy Data"
+author: "Sylvia Seow"
+date: "Wednesday, May 20, 2015"
+output: "html_document"
+---
+
 ***
+## Study Design
+1. Data is collect via internet. File is downloaded from the link given in assigned
+2.  The data in tidy data is calculated based on mean of the selected column as in source
+3. The source column selected are mean() or std() (standard deviation)
 
 
+## Code Book
 1.  Subject_id  5
     * Subject ID  ID for the Person that do the Test
         * 1-30  1 to 30 for Subject
