@@ -3,7 +3,7 @@
 ---
 title: "Codebook for Data Dictionary of Tidy Data"
 author: "Sylvia Seow"
-date: "Wednesday, May 20, 2015"
+date: "Thursday, July 23, 2015"
 output: "html_document"
 ---
 
@@ -13,6 +13,11 @@ output: "html_document"
 2.  The data in tidy data is calculated based on mean of the selected column as in source
 3. The source column selected are mean() or std() (standard deviation)
 
+##Description of the variables in the tidy_data.txt file
+General description of the file including:
+ - Dimensions of the dataset: 180 observations with 68 variables 
+ - All data is group by test subject, and the activity label, all data capture in variables are in wide format again
+ - Variables present in the dataset
 
 ## Code Book
 1.  Subject_id  5

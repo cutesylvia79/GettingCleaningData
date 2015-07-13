@@ -1,6 +1,7 @@
 
 library(reshape2)
-
+library(data.table)
+library(dplyr)
 
 ##setwd("C:/Users/sylvia.seow/sylviadatascience/sylviadatascience/r")
 
@@ -32,7 +33,7 @@ if (use_local ==0)
 message("Preparing dataset....")
 activity_label_raw <- read.table("UCI HAR Dataset/activity_labels.txt", sep="")
 feature_raw <- read.table("UCI HAR Dataset/features.txt", sep="")
-feature_add <- read.csv("tidy_feature.csv")
+feature_add <- read.csv("tidy_feature2.csv")
 
 
 ## load test data
@@ -62,40 +63,28 @@ names(subject_train_raw) <- c("student_id")
 names(y_train_raw) <- c("activity_id")
 
 ## renaming the x column name without "V"
-names(x_test_data_raw) <- c(as.character(1:561))
-names(x_train_data_raw) <- c(as.character(1:561))
 
-## step 2
-## Extracts only the measurements on the mean and standard deviation for each measurement. 
-## filter all the all feature name with "mean()"
-## however it return all rows with meanFreq() as well"
-feature_mean_raw <- feature_raw[grep("*mean()", feature_raw$feature_name), ]
-##filter again to remove the line with meanFreq
-feature_mean_raw<-feature_mean_raw[-grep("*Freq()", feature_mean_raw$feature_name),]
-##filter for all feature name with std()
-feature_std_raw <- feature_raw[grep("*std()", feature_raw$feature_name), ]
-## combine the result from mean and std
-feature_new <- rbind(feature_mean_raw,feature_std_raw)
-## convert feature_id column to numeric for future sorting
-feature_new$new_feature_id <- as.numeric(feature_new$feature_id)
-## sorting by feature_id
-feature_new <- feature_new[order(feature_new$new_feature_id),]
-feature_new <- feature_new[,-1]
+##names(x_test_data_raw) <- c(as.character(1:561))
+##names(x_train_data_raw) <- c(as.character(1:561))
+names(x_test_data_raw) <- feature_raw[,2]
+names(x_train_data_raw) <- feature_raw[,2]
 
-##step 4
-## Appropriately labels the data set with descriptive variable names. 
-## merge feature for label for more 
-feature_new <- merge(feature_new, feature_add, by.x="new_feature_id",by.y="feature_id",all=FALSE)
+
+## step4 filter data
+X_test_mean_std  = x_test_data_raw[,grep("mean|std", colnames(x_test_data_raw))]
+X_test_mean_std  = X_test_mean_std[,-grep("Freq", colnames(X_test_mean_std))]
+X_train_mean_std  = x_train_data_raw[,grep("mean|std", colnames(x_train_data_raw))]
+X_train_mean_std  = X_train_mean_std[,-grep("Freq", colnames(X_train_mean_std))]
 
 
 ## Combine data and prepare for test data set
 message("Melting testing data by variable (converting columns to rows)....")
 subject_test_raw$dataset_source <- "test"
-test_data_raw <- cbind(subject_test_raw, y_test_raw, x_test_data_raw)
-test_data_melt <- melt(test_data_raw, id=c("student_id","dataset_source","activity_id"))
-colnames(test_data_melt) <- c("subject_id","dataset_source","activity_id","feature_id", "value_data")
+X_test_mean_std <- cbind(subject_test_raw, y_test_raw, X_test_mean_std)
+test_data_melt <- melt(X_test_mean_std, id=c("student_id","dataset_source","activity_id"))
+colnames(test_data_melt) <- c("subject_id","dataset_source","activity_id","variable_name", "value_data")
 ## merge data with matching labels for feature / activity
-test_data_merge <- merge(test_data_melt, feature_new, by.x="feature_id",by.y="new_feature_id",all=FALSE)
+test_data_merge <- merge(test_data_melt, feature_add, by.x="variable_name",by.y="variable_name",all=FALSE)
 test_data_merge <- merge(test_data_merge, activity_label_raw, by.x="activity_id",by.y="activity_id",all=FALSE)
 
 
@@ -103,13 +92,13 @@ test_data_merge <- merge(test_data_merge, activity_label_raw, by.x="activity_id"
 subject_train_raw$dataset_source <- "train"
 
 message("Melting training data by variable (converting columns to rows)....")
-train_data_raw <- cbind(subject_train_raw, y_train_raw, x_train_data_raw)
-train_data_melt <- melt(train_data_raw, id=c("student_id","dataset_source","activity_id"))
-colnames(train_data_melt) <- c("subject_id","dataset_source","activity_id","feature_id", "value_data")
+X_train_mean_std <- cbind(subject_train_raw, y_train_raw, X_train_mean_std)
+train_data_melt <- melt(X_train_mean_std, id=c("student_id","dataset_source","activity_id"))
+colnames(train_data_melt) <- c("subject_id","dataset_source","activity_id","variable_name", "value_data")
 
 ##Appropriately labels the data set with descriptive variable names. 
 message("Merging testing and training data...")
-train_data_merge <- merge(train_data_melt, feature_new, by.x="feature_id",by.y="new_feature_id",all=FALSE)
+train_data_merge <- merge(train_data_melt, feature_add, by.x="variable_name",by.y="variable_name",all=FALSE)
 train_data_merge <- merge(train_data_merge, activity_label_raw, by.x="activity_id",by.y="activity_id",all=FALSE)
 
 ## merge data from test data and training data
@@ -123,10 +112,9 @@ tidy_data <- dcast(all_data_set1, subject_id + Activity_Label ~ Variable_Label, 
 
 ## write out the table to working directory again
 ##step 5
-message("Exporting tiday data set to file...")
+message("Exporting tidy data set to file...")
 write.table(tidy_data,file="tidy_dataset.txt", row.names=FALSE)
-message("tiday_dataset.txt is saved in working directory")
-
+message("tidy_dataset.txt is saved in working directory")
 
 
 
